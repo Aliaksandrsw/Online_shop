@@ -6,6 +6,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
 
+from store.models import Basket
+
 from users.forms import LoginUserForm, RegisterUserForm, ProfileUserForm
 
 
@@ -23,7 +25,7 @@ class RegisterUser(CreateView):
     success_url = reverse_lazy('users:login')
 
 
-class ProfileUser(LoginRequiredMixin,UpdateView):
+class ProfileUser(LoginRequiredMixin, UpdateView):
     model = get_user_model()
     form_class = ProfileUserForm
     template_name = 'users/profile.html'
@@ -38,3 +40,8 @@ class ProfileUser(LoginRequiredMixin,UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('users:profile')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['baskets'] = Basket.objects.filter(user=self.request.user)
+        return context
