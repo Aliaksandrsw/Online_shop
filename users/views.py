@@ -1,14 +1,15 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.http import request
+from django.http import request, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView
+from django.urls import reverse_lazy, reverse
+from django.views.generic import CreateView, UpdateView, TemplateView
 
 from store.models import Basket
 
 from users.forms import LoginUserForm, RegisterUserForm, ProfileUserForm
+from users.models import User, EmailVerification
 
 
 class LoginUser(LoginView):
@@ -45,3 +46,18 @@ class ProfileUser(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['baskets'] = Basket.objects.filter(user=self.request.user)
         return context
+
+
+class EmailVerificationView(TemplateView):
+    template_name = 'users/email_verification.html'
+
+    def get(self, request, *args, **kwargs):
+        code = kwargs['code']
+        user = User.objects.get(email=kwargs['email'])
+        email_verifications = EmailVerification.objects.filter(user=user, code=code)
+        if email_verifications.exists() and not email_verifications.first().is_expired():
+            user.is_verified_email = True
+            user.save()
+            return super(EmailVerificationView, self).get(request, *args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse('index'))

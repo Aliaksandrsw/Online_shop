@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-$*v-q#umz$)%lsc0d3jc63rmav@rfo!)19%as2*o++)&n%k(6!
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+DOMAIN_NAME = 'http://127.0.0.1:8000/'
 # Application definition
 
 INSTALLED_APPS = [
@@ -116,3 +116,5 @@ DEFAULT_CHARSET = 'utf-8'
 AUTH_USER_MODEL = 'users.User'
 
 LOGOUT_REDIRECT_URL = 'users:login'
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

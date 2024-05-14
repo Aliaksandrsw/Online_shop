@@ -4,24 +4,25 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import ListView, DeleteView
+from django.views.generic import ListView, DeleteView, TemplateView
 
 from store.models import Product, ProductCategory, Basket
 
 
-class Index(ListView):
+class Index(TemplateView):
     template_name = 'store/index.html'
-
-    def get_queryset(self):
-        return []
 
 
 class ProductView(ListView):
+    model = Product
     template_name = 'store/products.html'
+    paginate_by = 2
     context_object_name = 'products'
 
     def get_queryset(self):
-        return Product.objects.all()
+        queryset = super().get_queryset()
+        category_id = self.kwargs.get('category_id')
+        return queryset.filter(category_id=category_id) if category_id else queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
