@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'store.apps.StoreConfig',
     'users.apps.UsersConfig',
+    'orders.apps.OrdersConfig',
 
     'allauth',
     'allauth.account',
